@@ -1,0 +1,8 @@
+(blocking )
+(pick-up blue)
+(stack blue green)
+(unstack red yellow)
+(stack red blue)
+(stop-blocking )
+(form3tower red blue green)
+; cost = 7 (unit cost)
