@@ -37,7 +37,6 @@ red orange green yellow blue - block
 
 (:goal
 (and
-(not (blocking))
 (tower3-formed red)
 )
 )

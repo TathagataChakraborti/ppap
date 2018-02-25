@@ -23,33 +23,8 @@ block bottle can - object
 (handempty)
 (handtucked)
 (crouched)
-(blocking)
 (tower2-formed ?x - block)
 (tower3-formed ?x - block)
-)
-
-(:action blocking
-:parameters ()
-:precondition
-(and
-(at lab)
-)
-:effect
-(and
-(blocking)
-)
-)
-
-(:action stop-blocking
-:parameters ()
-:precondition
-(and
-(blocking)
-)
-:effect
-(and
-(not (blocking))
-)
 )
 
 (:action form2tower
@@ -85,7 +60,6 @@ block bottle can - object
 :parameters (?x - block)
 :precondition
 (and
-(blocking)
 (clear ?x)
 (ontable ?x)
 (handempty)
@@ -103,7 +77,6 @@ block bottle can - object
 :parameters (?x - block)
 :precondition
 (and
-(blocking)
 (holding ?x)
 )
 :effect
@@ -119,7 +92,6 @@ block bottle can - object
 :parameters (?x ?y - block)
 :precondition
 (and
-(blocking)
 (holding ?x)
 (clear ?y)
 )
@@ -137,7 +109,6 @@ block bottle can - object
 :parameters (?x ?y - block)
 :precondition
 (and
-(blocking)
 (on ?x ?y)
 (clear ?x)
 (handempty)
@@ -156,7 +127,6 @@ block bottle can - object
 :parameters (?from ?to - location)
 :precondition
 (and
-(not (blocking))
 (at ?from)
 )
 :effect
@@ -170,7 +140,6 @@ block bottle can - object
 :parameters ()
 :precondition
 (and
-(not (blocking))
 )
 :effect
 (and
@@ -182,7 +151,6 @@ block bottle can - object
 :parameters ()
 :precondition
 (and
-(not (blocking))
 )
 :effect
 (and
