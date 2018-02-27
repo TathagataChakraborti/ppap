@@ -1,0 +1,5 @@
+Domain=PAPP
+Problem=BRAT
+Preprocessing=<1 msec
+Fluents=47
+Operators=66
