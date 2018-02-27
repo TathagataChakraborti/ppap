@@ -22,9 +22,9 @@ method :: main
 
 def main():
 
-    parser = argparse.ArgumentParser(description='''The driver script for the Projection Aware Planning Prototype''',
+    parser = argparse.ArgumentParser(description='''Driver script for Projection-Aware Planning''',
                                      epilog="Usage >> ./main.py -u 1")
-
+    
     parser.add_argument('-u', '--usecase', type=int, help="ID of the Use Case.")
     parser.add_argument('-d', '--domain',  type=str, help="(path to) domain file.")
     parser.add_argument('-p', '--problem', type=str, help="(path to) problem file.")
@@ -39,7 +39,7 @@ def main():
     if args.usecase == 1:
 
         problem_instance = Problem(args.domain, args.problem)
-        PAPP(problem_instance)
+        print PAPP(problem_instance)
 
     elif args.usecase == 2:
 

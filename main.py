@@ -39,7 +39,7 @@ def main():
     if args.usecase == 1:
 
         problem_instance = Problem(args.domain, args.problem)
-        PAPP(problem_instance)
+        print PAPP(problem_instance)
 
     elif args.usecase == 2:
 

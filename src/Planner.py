@@ -14,7 +14,7 @@ import copy
 Method :: Projection Aware Planner module implementing astar search
 '''
 
-def PAPP(problem):
+def PAPP(problem, relaxed_flag=False):
     
     initState = problem.getInitState()
     fringe    = PriorityQueue()
@@ -23,28 +23,29 @@ def PAPP(problem):
 
     fringe.put((0.0, [initState, []]))
 
-    print "Runnning aStar Search..."
+    if not relaxed_flag:
+        print "Runnning aStar Search..."
+
     while not fringe.empty():
 
         node = fringe.get()[1]
 
         if problem.isGoal(node):
-            print "Goal Found! Number of Nodes Expanded = {}\n{}".format(numNodes, '\n'.join(node[1]))
+
+            if not relaxed_flag:
+                print "Goal Found! Number of Nodes Expanded = {}".format(numNodes)
+
             return node[1]
 
         if frozenset(node[0]) not in closed:
 
             closed.add(frozenset(node[0]))
 
-            successor_list = problem.getSuccessors(node)
-            numNodes += 1
+            successor_list = problem.getSuccessors(node, relaxed_flag)
+            numNodes      += 1
 
-            if not numNodes % 100:
+            if not numNodes % 10 and not relaxed_flag:
                 print "Number of Nodes Expanded =", numNodes
-
-
-            #print successor_list
-            #exit()
 
             while successor_list:
                 

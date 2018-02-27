@@ -52,8 +52,10 @@ def read_planning_problem_from_PDDL(domainFileName, problemFileName):
                                               re.search(':effect[\s+]*\(and(.*?)\)[\s+]*(\(:action|\)[\s+]*$)',
                                                         description).group(1))}
         except: effects        = {}
-            
-        return [action_name, parameters, preconditions, effects]
+
+        action_cost = 1
+        
+        return [action_name, parameters, preconditions, effects, action_cost]
 
     
     ''''''
