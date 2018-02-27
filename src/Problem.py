@@ -20,7 +20,7 @@ class Problem:
 
         print "Setting up Planning Problem..."
 
-        self.domainFile = domainFile
+        self.domainFile  = domainFile
         self.problemFile = problemFile
 
         ground(self.domainFile, self.problemFile)
