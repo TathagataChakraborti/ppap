@@ -35,7 +35,7 @@ A B G R O T - block
 
 (:goal
 (and
-<<HYPOTHESIS>>
+(word-formed B R A T)
 )
 )
 
