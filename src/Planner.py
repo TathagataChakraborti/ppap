@@ -45,7 +45,7 @@ def PAPP(problem, relaxed_flag=False):
             successor_list = problem.getSuccessors(node, relaxed_flag)
             numNodes      += 1
 
-            if not numNodes % 1 and not relaxed_flag:
+            if not numNodes % 10 and not relaxed_flag:
                 print "Number of Nodes Expanded =", numNodes
 
             while successor_list:
@@ -57,9 +57,6 @@ def PAPP(problem, relaxed_flag=False):
                 
                 new_node       = [candidate_node[0], plan_prefix, candidate_node[2]]
  
-                #if not relaxed_flag:
-                #    print (candidate_node[2], new_node)
-            
                 fringe.put((candidate_node[2], new_node))
 
     return None

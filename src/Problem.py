@@ -20,6 +20,9 @@ _projection_bias  = 0.1           # trade-off in cost of physical actions versus
 _projection_cost  = 0.1           # cost of projection actions
 _discount_factor  = 1.5           # earlier the projections the better
 
+_constant_alpha   = 1             # scale cost cost
+_constant_beta    = 1000          # scale projection cost
+
 _path_to_template = '../domains/case-1/template.pddl'
 _path_to_hyps     = '../domains/case-1/hyps.dat'
 
@@ -76,11 +79,12 @@ class Problem:
         return self.goalState
 
     def isGoal(self, node):
-        return set(self.getGoalState()).issubset(node[0]) and all([action.split('PR-')[1] in node[1] if 'PR-' in action else True for action in node[1]])
+        return set(self.getGoalState()).issubset(node[0]) and all([action.split('PR-')[1] in node[1] and any([node[1][-1] == item for item in self.cache[action]]) if 'PR-' in action else True for action in node[1]]) 
 
     def heuristic(self, currentAction, planPrefix, currentState):
 
         planList = []
+        self.cache[currentAction] = []
         
         for hyp in self.hyps:
 
@@ -96,12 +100,10 @@ class Problem:
             plan = PAPP(temp_problem_instance, relaxed_flag=True)
             planList.append(plan)
 
-        count = [1 if currentAction.split('PR-')[1] in plan else 0 for plan in planList]
-        count = len(planList) if sum(count) == 0 else sum(count)
-
-        self.cache[currentAction] = count
-
-        return count
+            if currentAction.split('PR-')[1] in plan:
+                self.cache[currentAction].append(plan[-1])
+            
+        return len(planList) if len(self.cache[currentAction]) == 0 else len(self.cache[currentAction])
 
     
     def getSuccessors(self, node, relaxed_flag=False):
@@ -125,8 +127,6 @@ class Problem:
                 if not applicable: break
 
             if 'PR-' in action[0] and self.pr_done:
-                print self.cache
-                exit()
                 applicable = False
                 
             if applicable:
@@ -144,22 +144,26 @@ class Problem:
 
                 if relaxed_flag:
 
-                    newCost = currentCost + 1
+                    newCost = currentCost + action[4]
 
                 else:
 
                     if 'PR-' in action[0]:
 
-                        newCost = currentCost + _projection_cost * self.heuristic(action[0], node[1], newState)
-
+                        newCost = currentCost + _constant_beta * _projection_cost * self.heuristic(action[0], node[1], newState)
+                        
                     else:
 
                         actionCost = action[4]
 
                         if 'PR-' + action[0] in node[1]:
-                            actionCost = _projection_cost * self.cache['PR-' + action[0]]
+                            actionCost = _projection_cost
+                            
+                        newCost = currentCost + _constant_alpha * actionCost
 
-                        newCost    = currentCost + actionCost * len(self.hyps)
+                        if not self.pr_done:
+                            newCost += _constant_beta * len(self.hyps)
+
 
                 successor_list.append([newState, action[0], newCost])
 
