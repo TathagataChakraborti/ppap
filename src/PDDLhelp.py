@@ -53,7 +53,7 @@ def read_planning_problem_from_PDDL(domainFileName, problemFileName):
                                                         description).group(1))}
         except: effects        = {}
 
-        action_cost = 1
+        action_cost = 1.0
         
         return [action_name, parameters, preconditions, effects, action_cost]
 
@@ -97,13 +97,13 @@ def read_planning_problem_from_PDDL(domainFileName, problemFileName):
             if line.strip() == ')':
                 read_goal_flag = False
 
-            if read_init_flag:
+            if read_init_flag and 'total-cost' not in line:
                 init_state.add(line.strip()[1:-1].strip())
 
             if read_goal_flag:
                 goal_state.add(line.strip()[1:-1].strip())
 
-            if 'total-cost' in line:
+            if '(:init' in line:
                 read_init_flag = True
  
             if '(and' in line:

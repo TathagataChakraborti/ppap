@@ -38,8 +38,7 @@ Me - human
 
 (:goal
 (and
-(word-formed Fetch)
-(word-formed Me)
+<<HYPOTHESIS>>
 )
 )
 

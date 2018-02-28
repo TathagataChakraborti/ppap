@@ -1,4 +1,4 @@
-﻿;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; USE CASE - 2 - Projection Aware Plan Execution
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -17,7 +17,7 @@ block
 (holding ?x - block)
 (handempty)
 (isword ?b1 ?b2 ?b3 ?b4 - block)
-(word-formed)
+(word-formed ?b1 ?b2 ?b3 ?b4 - block)
 )
 
 (:action makeword
@@ -33,7 +33,7 @@ block
 )
 :effect
 (and
-(word-formed)
+(word-formed ?b1 ?b2 ?b3 ?b4)
 )
 )
 

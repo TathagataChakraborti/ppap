@@ -15,9 +15,10 @@ import copy
 Global Variables
 '''
 
-_projection_set   = ['UNSTACK', 'PICK-UP']   # projections are available for these actions
-_projection_bias  = 10                       # trade-off in cost of physical actions versus projections
-_projection_cost  = 0.1                      # cost of projection actions
+_projection_set   = ['PICK-UP']   # projections are available for these actions
+_projection_bias  = 0.1           # trade-off in cost of physical actions versus projections
+_projection_cost  = 0.1           # cost of projection actions
+_discount_factor  = 1.5           # earlier the projections the better
 
 _path_to_template = '../domains/case-1/template.pddl'
 _path_to_hyps     = '../domains/case-1/hyps.dat'
@@ -29,8 +30,6 @@ Class :: Problem Definition
 class Problem:
 
     def __init__(self, domainFile, problemFile, ground_flag=True):
-
-        # print "Setting up Planning Problem..."
 
         self.domainFile  = domainFile
         self.problemFile = problemFile
@@ -44,6 +43,18 @@ class Problem:
 
             self.initState, self.goalState, self.predicateList, self.actionList = read_planning_problem_from_PDDL(self.domainFile, self.problemFile)
 
+        # entanglement refinement
+            
+        temp_actionList = copy.deepcopy(self.actionList)
+
+        for item in self.actionList:
+            if 'UNSTACK' in item or 'PUT-DOWN' in item:
+                temp_actionList.pop(item)
+
+        self.actionList = copy.deepcopy(temp_actionList)
+
+        # add projection actions
+        
         actions = self.actionList.keys()
         for action in actions:
             if any([projection in action for projection in _projection_set]):
@@ -55,7 +66,9 @@ class Problem:
         with open(_path_to_template, 'r') as template_problem_file:
             self.template_problem = template_problem_file.read()
 
-
+        self.pr_done = False
+        self.cache   = {}
+        
     def getInitState(self):
         return self.initState
 
@@ -67,6 +80,8 @@ class Problem:
 
     def heuristic(self, currentAction, planPrefix, currentState):
 
+        planList = []
+        
         for hyp in self.hyps:
 
             template_problem = copy.deepcopy(self.template_problem)
@@ -77,16 +92,23 @@ class Problem:
                                         .replace('<<HYPOTHESIS>>', '\n'.join([item.strip() for item in hyp.strip().split(',')])))
             
             temp_problem_instance = Problem('tr-domain.pddl', 'problem.pddl', ground_flag=False)
-            #print PAPP(temp_problem_instance, relaxed_flag=True)
-            
-        return 0.0
+
+            plan = PAPP(temp_problem_instance, relaxed_flag=True)
+            planList.append(plan)
+
+        count = [1 if currentAction.split('PR-')[1] in plan else 0 for plan in planList]
+        count = len(planList) if sum(count) == 0 else sum(count)
+
+        self.cache[currentAction] = count
+
+        return count
 
     
     def getSuccessors(self, node, relaxed_flag=False):
 
-        currentState   = node[0]
-        currentCost    = len(node[1])
-        successor_list = []
+        currentState    = node[0]
+        currentCost     = node[2]
+        successor_list  = []
 
         temp_actionList = copy.deepcopy(self.actionList)
 
@@ -101,7 +123,12 @@ class Problem:
             for condition in action[2].keys():
                 applicable = condition in currentState
                 if not applicable: break
-        
+
+            if 'PR-' in action[0] and self.pr_done:
+                print self.cache
+                exit()
+                applicable = False
+                
             if applicable:
 
                 newState = copy.deepcopy(currentState)
@@ -111,16 +138,31 @@ class Problem:
                         newState.add(condition)
 
                     else:
-
+                        
                         if not relaxed_flag:
                             newState.discard(condition)
 
                 if relaxed_flag:
+
                     newCost = currentCost + 1
+
                 else:
-                    newCost = currentCost + 1
-                    val = 1 + _projection_bias * self.heuristic(action[0], node[1], newState)
-                    
+
+                    if 'PR-' in action[0]:
+
+                        newCost = currentCost + _projection_cost * self.heuristic(action[0], node[1], newState)
+
+                    else:
+
+                        actionCost = action[4]
+
+                        if 'PR-' + action[0] in node[1]:
+                            actionCost = _projection_cost * self.cache['PR-' + action[0]]
+
+                        newCost    = currentCost + actionCost * len(self.hyps)
+
                 successor_list.append([newState, action[0], newCost])
+
+        self.pr_done = True
 
         return successor_list

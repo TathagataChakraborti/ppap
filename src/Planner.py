@@ -21,30 +21,31 @@ def PAPP(problem, relaxed_flag=False):
     closed    = set()
     numNodes  = 0
 
-    fringe.put((0.0, [initState, []]))
+    fringe.put((0.0, [initState, [], 0.0]))
 
     if not relaxed_flag:
         print "Runnning aStar Search..."
 
     while not fringe.empty():
 
-        node = fringe.get()[1]
-
+        val, node = fringe.get()
+        
         if problem.isGoal(node):
 
             if not relaxed_flag:
-                print "Goal Found! Number of Nodes Expanded = {}".format(numNodes)
+                print "Goal Found! Number of Nodes Expanded = {} / {}".format(numNodes, val)
 
             return node[1]
 
         if frozenset(node[0]) not in closed:
 
-            closed.add(frozenset(node[0]))
+            if relaxed_flag:
+                closed.add(frozenset(node[0]))
 
             successor_list = problem.getSuccessors(node, relaxed_flag)
             numNodes      += 1
 
-            if not numNodes % 10 and not relaxed_flag:
+            if not numNodes % 1 and not relaxed_flag:
                 print "Number of Nodes Expanded =", numNodes
 
             while successor_list:
@@ -54,8 +55,11 @@ def PAPP(problem, relaxed_flag=False):
                 plan_prefix    = copy.deepcopy(node[1])
                 plan_prefix.append(candidate_node[1])
                 
-                new_node       = [candidate_node[0], plan_prefix]
-
+                new_node       = [candidate_node[0], plan_prefix, candidate_node[2]]
+ 
+                #if not relaxed_flag:
+                #    print (candidate_node[2], new_node)
+            
                 fringe.put((candidate_node[2], new_node))
 
     return None

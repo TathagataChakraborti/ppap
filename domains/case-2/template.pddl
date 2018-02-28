@@ -1,8 +1,4 @@
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; USE CASE - 2 - Projection Aware Plan Execution
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(define (problem BRAT)
+﻿(define (problem BRAT)
 
 (:domain PAPE)
 
@@ -35,7 +31,7 @@ A B G R O T - block
 
 (:goal
 (and
-(word-formed B O A T)
+<<HYPOTHESIS>>
 )
 )
 

@@ -3,12 +3,16 @@
 	(:domain grounded-PAPP)
 	(:init
 		( CLEAR_R )
+( CLEAR_T )
 ( ONTABLE_T )
-( HOLDING_A )
+( ONTABLE_R )
+( CLEAR_A )
+( CLEAR_C )
 ( CLEAR_B )
-( ON_B_C )
+( HANDEMPTY )
+( ONTABLE_A )
 ( ONTABLE_C )
-( ON_R_T )
+( ONTABLE_B )
 	)
 	(:goal
 		(and 
