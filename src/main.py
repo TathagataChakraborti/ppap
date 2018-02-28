@@ -51,7 +51,7 @@ def main():
 
     elif args.usecase == 3:
 
-        execution_instance = ExeHILP(args.domain, args.problem, args.hyps)
+        execution_instance = ExeHILP(args.domain, args.problem, args.hyps, args.real_hyp)
 
         print execution_instance.getPlan()
         print execution_instance.getProjection()

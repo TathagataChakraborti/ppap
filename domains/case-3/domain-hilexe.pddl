@@ -19,6 +19,7 @@ human robot - agent
 (handempty ?a - agent)
 (isword ?b1 ?b2 ?b3 - block)
 (word-formed ?a - agent)
+(which-word ?a - agent ?b1 ?b2 ?b3 - block)
 )
 
 (:action makeword
@@ -33,6 +34,7 @@ human robot - agent
 :effect
 (and
 (word-formed ?a)
+(which-word ?a ?b1 ?b2 ?b3)
 )
 )
 

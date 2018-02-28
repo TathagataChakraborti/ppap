@@ -20,17 +20,13 @@ import numpy as np
 Global Variables
 '''
 
-_path_to_template = '../domains/case-2/template.pddl'
-
-
-
 '''
 Class :: Projection Aware Plan Executor
 '''
 
 class Exe:
 
-    def __init__(self, domainFile, problemFile, hypsFile, realHypFile):
+    def __init__(self, domainFile, problemFile, hypsFile, realHypFile, path_to_template = '../domains/case-2/template.pddl'):
 
         print "Setting up Plan Executor..."
 
@@ -39,7 +35,7 @@ class Exe:
         self.hypsFile    = hypsFile
         self.realHypFile = realHypFile
 
-        with open(_path_to_template, 'r') as template_file:
+        with open(path_to_template, 'r') as template_file:
             template = template_file.read()
 
         with open(self.hypsFile, 'r') as hyps_file:
@@ -115,28 +111,64 @@ class Exe:
             
         conflict = sorted({obj : sum(real_profiles[obj] * hyps_profiles[obj]) for obj in objects}.items(), key=lambda x:x[1])
 
+        return self.__filter__(conflict, real_profiles, hyps_profiles)
+
+        
+    def __filter__(self, conflict, real_profiles, hyps_profiles):
+        
+        print conflict
+
         for item in conflict:
             if sum(real_profiles[item[0]]) > 0.0:
                 return 'Project >> ' + item[0]
         
 
+            
 '''
-Class :: Projection Aware Plan Executor
+Class :: Projection Aware Human-in-the-Loop Plan Executor
 '''
 
-class ExeHILP:
+class ExeHILP(Exe):
 
-    def __init__(self, domainFile, problemFile, hyps):
+    def __init__(self, domainFile, problemFile, hypsFile, realHypFile, path_to_template = '../domains/case-3/template.pddl'):
+        Exe.__init__(self, domainFile, problemFile, hypsFile, realHypFile, path_to_template = '../domains/case-3/template.pddl')
 
-        print "Setting up Human-in-the-Loop Plan Executor..."
+    def __compute_profile__(self, obj, plan):
 
-        self.domainFile    = domainFile
-        self.problemFile   = problemFile
-        self.hypothsisFile = hyps
+        if obj == 'T':
 
-    def getPlan(self):
-        pass
+            profile = np.ones(len(plan))
 
-    def getProjection(self):
-        pass
+        else:
+            
+            profile = np.zeros(len(plan))
+            
+            if 'pick-up fetch {}'.format(obj.lower()) in plan:
 
+                idx = plan.index('pick-up fetch {}'.format(obj.lower()))
+
+                for i in range(idx, len(plan)):
+                    profile[i] = 1.0
+                
+            if 'pick-up me {}'.format(obj.lower()) in plan:
+
+                idx = plan.index('pick-up me {}'.format(obj.lower()))
+
+                for i in range(idx, len(plan)):
+                    profile[i] = 1.0
+                
+        return profile
+                
+            
+    def __filter__(self, conflict, real_profiles, hyps_profiles):
+
+        conflict = conflict[::-1]
+        
+        print conflict
+
+        ret = []
+        for item in conflict:
+            if sum(real_profiles[item[0]]) != 0.0:
+                ret.append('Project >> ' + item[0])
+
+        return '\n'.join(ret)

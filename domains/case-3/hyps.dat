@@ -1,2 +1,3 @@
-(word-formed Fetch)
-(word-formed Me)
+(which-word Me A R T)
+(which-word Me R A T)
+(which-word Me C O B)
